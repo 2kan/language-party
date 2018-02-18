@@ -1,6 +1,10 @@
-const express = require( "express" );
-const app = express();
+const path = require( "path" );
 const request = require( "request" );
+const express = require( "express" );
+
+const app = express();
+const http = require( "http" ).Server( app );
+const io = require( "socket.io" )( http );
 
 var bodyParser = require( "body-parser" );
 app.use( bodyParser.urlencoded( { extended: false } ) );
@@ -11,47 +15,72 @@ const langMap = require( "./languages.json" );
 
 const TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2";
 
-//const languages = [ "zu", "en" ];
-
-app.post( "/", function ( a_req, a_res )
+/*app.get( "/", function ( a_req, a_res )
 {
-	console.log( "." );
-	if ( a_req.body[ "text" ] == undefined || a_req.body[ "languages" ] == undefined )
-	{
-		a_res.status( 400 ).send( "missing input" ); // todo: make this mor informative
-		return;
-	}
+	a_res.sendFile( path.join( __dirname, "./public/index.html" ) );
+} );*/
 
-	var languages = a_req.body[ "languages" ].replace( /\s/g, "" ).split( "," );
-	if ( languages.length == 0 )
-	{
-		a_res.status( 400 ).send( "invalid languages input" );
-		return;
-	}
+app.use( express.static( "./public" ) );
 
-	// Validate input languages
-	var humanLangs = [];
-	for ( var i = 0; i < languages.length; ++i )
+
+//app.post( "/party", function ( a_req, a_res )
+io.on( "connection", function ( a_sock )
+{
+	console.log( "User connected" );
+	a_sock.on( "disconnect", function ()
 	{
-		if ( langMap[ languages[ i ] ] == undefined )
+		console.log( "user disconnected" );
+
+	} );
+
+	a_sock.on( "translate", function ( a_params )
+	{
+		console.log( a_params )
+		// Validate input
+		if ( a_params.text == undefined || a_params.languages == undefined )
 		{
-			a_res.status( 400 ).send( "invalid language: " + languages[ i ] );
+			a_sock.emit( "err", "Missing input parameters" );
 			return;
 		}
 
-		humanLangs.push( langMap[ languages[ i ] ] );
-	}
+		var languages = a_params.languages.replace( /\s/g, "" ).split( "," );
+		if ( languages.length == 0 )
+		{
+			a_sock.emit( "err", "invalid languages input" );
+			return;
+		}
 
-	console.log( "Translating through: " + humanLangs.join( " -> " ) );
-	translate( languages, 0, a_req.body[ "text" ], [], a_res );
+		// Validate input languages
+		var humanLangs = [];
+		for ( var i = 0; i < languages.length; ++i )
+		{
+			if ( langMap[ languages[ i ] ] == undefined )
+			{
+				a_sock.emit( "err", "Invalid language: " + languages[ i ] );
+				return;
+			}
+
+			humanLangs.push( langMap[ languages[ i ] ] );
+		}
+
+		console.log( "Translating through: " + humanLangs.join( " -> " ) );
+		translate( languages, 0, a_params.text, [], a_sock );
+	} );
 } );
 
-function translate( a_languages, a_langIndex, a_textToTranslate, a_translations, a_httpResponse )
+http.listen( 3000, function ()
 {
+	console.log( "Listening on port 3000" );
+} );
+
+
+function translate( a_languages, a_langIndex, a_textToTranslate, a_translations, a_sock )
+{
+	// If we've seen this translation already, send the response.
+	// This prevents an infinite loop of conversions
 	if ( a_translations.includes( a_textToTranslate ) )
 	{
-		//console.log( a_translations );
-		a_httpResponse.send( a_textToTranslate );
+		a_sock.emit( "translation", { language: "Equilibrium", translation: a_textToTranslate, equilibrium: true } );
 		console.log( "Equilibrium: " + a_textToTranslate );
 		console.log( "~ done ~" );
 		return;
@@ -73,7 +102,7 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 		{
 			if ( a_err )
 			{
-				a_httpResponse.status( 500 ).send( "Something gone and done goofed :/" )( a_err );
+				a_sock.emit( "error", "Something gone and done goofed :/" )( a_err );
 				return;
 			}
 
@@ -83,25 +112,23 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 
 			if ( body == undefined || body.data == undefined || body.data.translations == undefined )
 			{
-				a_httpResponse.status( 500 ).send( "Unexpected response from Google Translate API" );
+				a_sock.emit( "error", "Unexpected response from Google Translate API" );
 				return;
 			}
 
-			//console.log( body.data.translations[ 0 ].translatedText );
+			a_sock.emit( "translation", { language: langMap[ a_languages[ a_langIndex % a_languages.length ] ], translation: body.data.translations[ 0 ].translatedText } );
 
+			// If the result is in the target language (probably English 99% of the time),
+			// add the result to the array of translations
 			if ( a_langIndex % a_languages.length == 0 )
-			{
 				a_translations.push( a_textToTranslate );
-				//console.log( "added " + a_textToTranslate + " to translated array." );
-			}
 
-			translate( a_languages, a_langIndex + 1, body.data.translations[ 0 ].translatedText, a_translations, a_httpResponse );
+			translate( a_languages, a_langIndex + 1, body.data.translations[ 0 ].translatedText, a_translations, a_sock );
 		}
 	);
 }
 
-app.listen( 3000, function ()
+function GetHumanLanguage( a_languageCode )
 {
-	console.log( "Listning on 3000" );
-} );
-
+	return langMap[ langMap.indexOf[ a_languageCode ] ];
+}
