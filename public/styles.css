@@ -3,6 +3,11 @@ html
 	background-color: #f9f9f9;
 }
 
+body
+{
+	padding-bottom: 150px;
+}
+
 #heading
 {
 	margin-top: 20px;
@@ -46,4 +51,13 @@ html
 {
 	display: inline-block;
 	vertical-align: middle;
+}
+
+.footer
+{
+	background-color: #d4d4d4;
+	position: fixed;
+	bottom: 0;
+	padding-bottom: 3rem;
+	width: 100%; /* why doesn't bulma do this? */
 }

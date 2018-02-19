@@ -1,8 +1,10 @@
 const DEFAULT_LANGUAGE = "en";
 const translationTemplate = "<div class='languageCard ~equilibrium~'><div class='content'><h1 class='translation'>~translation~</h1><div class='meta'>Translated to <span class='language'>~language~</span></div></div></div>";
 const equilibriumTemplate = "<div class='languageCard equilibriumFound'><div class='content'><h1 class='translation'>Equilibrium found!</h1></div></div></div>";
+
 var langMap = [];
 var submissionLocked = false;
+var footerHeight = 0;
 
 // Fetch the language map and load the languages into select elements
 fetch( "/js/languages.json" )
@@ -16,6 +18,9 @@ fetch( "/js/languages.json" )
 
 $( document ).ready( function ()
 {
+	// Get the height of the footer, adding 50(px) for smooth scrolling
+	footerHeight = $( ".footer" )[ 0 ].getBoundingClientRect().height + 50;
+
 	$( "#inputForm" ).on( "submit", function ()
 	{
 		Submit();
@@ -34,15 +39,18 @@ socket.on( "translation", function ( a_response )
 		.replace( "~equilibrium~", ( a_response.equilibrium ) ? "equilibrium" : "" );
 
 	var newCard = $( "#translationOutlet" ).append( html );
+
+	// Scroll down to the new message
 	var rect = $( newCard )[ 0 ].getBoundingClientRect();
-	window.scroll( { top: rect.y + rect.height, left: 0, behavior: "smooth" } );
 
 	if ( a_response.equilibrium )
 	{
-		$( "#translationOutlet" ).append( equilibriumTemplate );
+		var equilibriumCard = $( "#translationOutlet" ).append( equilibriumTemplate );
+		rect = $( equilibriumCard )[ 0 ].getBoundingClientRect();
 		UnlockSubmission();
 	}
 
+	window.scroll( { top: rect.y + rect.height + footerHeight, left: 0, behavior: "smooth" } );
 } );
 
 socket.on( "err", function ( a_err )
