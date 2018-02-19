@@ -101,7 +101,7 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 	if ( a_translations.includes( a_textToTranslate ) )
 	{
 		a_sock.emit( "translation", {
-			language: a_languages[ a_languages.length - 1 ],
+			language: langMap[ a_languages[ a_languages.length - 1 ] ],
 			translation: a_textToTranslate,
 			equilibrium: true
 		} );
