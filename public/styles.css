@@ -1,3 +1,8 @@
+html
+{
+	background-color: #f9f9f9;
+}
+
 #heading
 {
 	margin-top: 20px;
@@ -28,6 +33,13 @@
 .languageCard.equilibrium
 {
 	background-color: #76ff5d;
+	border-bottom: 2px solid #3ad01f;
+}
+
+.languageCard.equilibriumFound
+{
+	background-color: #24bd09;
+	border-bottom: 0;
 }
 
 #sourceLanguageControl, #otherLanguageControl

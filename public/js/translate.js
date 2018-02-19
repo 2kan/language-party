@@ -1,5 +1,6 @@
 const DEFAULT_LANGUAGE = "en";
 const translationTemplate = "<div class='languageCard ~equilibrium~'><div class='content'><h1 class='translation'>~translation~</h1><div class='meta'>Translated to <span class='language'>~language~</span></div></div></div>";
+const equilibriumTemplate = "<div class='languageCard equilibriumFound'><div class='content'><h1 class='translation'>Equilibrium found!</h1></div></div></div>";
 var langMap = [];
 var submissionLocked = false;
 
@@ -32,10 +33,16 @@ socket.on( "translation", function ( a_response )
 		.replace( "~language~", a_response.language )
 		.replace( "~equilibrium~", ( a_response.equilibrium ) ? "equilibrium" : "" );
 
-	if ( a_response.equilibrium )
-		UnlockSubmission();
+	var newCard = $( "#translationOutlet" ).append( html );
+	var rect = $( newCard )[ 0 ].getBoundingClientRect();
+	window.scroll( { top: rect.y + rect.height, left: 0, behavior: "smooth" } );
 
-	$( "#translationOutlet" ).append( html );
+	if ( a_response.equilibrium )
+	{
+		$( "#translationOutlet" ).append( equilibriumTemplate );
+		UnlockSubmission();
+	}
+
 } );
 
 socket.on( "err", function ( a_err )
@@ -84,13 +91,13 @@ function LoadLanguages()
 function LockSubmission()
 {
 	submissionLocked = true;
-	$( "#submit" ).prop( "disabled", true );
+	$( "#submit" ).addClass( "is-loading" );
 }
 
 function UnlockSubmission()
 {
 	submissionLocked = false;
-	$( "#submit" ).prop( "disabled", false );
+	$( "#submit" ).removeClass( "is-loading" );
 }
 
 function GetRandomLanguage()
