@@ -36,6 +36,12 @@ $( document ).ready( function ()
 		$( "#extraLanguageControl" ).css( "display", "inline-block" );
 		useExtraLanguage = true;
 	} );
+
+	$( "#randomLanguage" ).on( "click", function ()
+	{
+		$( "#otherLanguage" ).val( GetRandomLanguage() );
+		$( "#extraLanguage" ).val( GetRandomLanguage() );
+	} );
 } );
 
 socket.on( "translation", function ( a_response )
