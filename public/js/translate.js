@@ -5,7 +5,7 @@ const equilibriumTemplate = "<div class='languageCard equilibriumFound'><div cla
 var langMap = [];
 var submissionLocked = false;
 var footerHeight = 0;
-var useExtraLanguage = true;
+var useExtraLanguage = false;
 
 // Fetch the language map and load the languages into select elements
 fetch( "/js/languages.json" )
