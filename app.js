@@ -15,12 +15,14 @@ const langMap = require( "./languages.json" );
 
 const TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2";
 
-/*app.get( "/", function ( a_req, a_res )
-{
-	a_res.sendFile( path.join( __dirname, "./public/index.html" ) );
-} );*/
 
 app.use( express.static( "./public" ) );
+
+// Send the language map JSON file is the client requests it
+app.get( "/js/languages.json", function ( a_req, a_res, a_body )
+{
+	a_res.sendFile( path.join( __dirname, "languages.json" ) );
+} );
 
 
 //app.post( "/party", function ( a_req, a_res )
@@ -80,7 +82,11 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 	// This prevents an infinite loop of conversions
 	if ( a_translations.includes( a_textToTranslate ) )
 	{
-		a_sock.emit( "translation", { language: "Equilibrium", translation: a_textToTranslate, equilibrium: true } );
+		a_sock.emit( "translation", {
+			language: a_languages[ a_languages.length - 1 ],
+			translation: a_textToTranslate,
+			equilibrium: true
+		} );
 		console.log( "Equilibrium: " + a_textToTranslate );
 		console.log( "~ done ~" );
 		return;
