@@ -135,8 +135,8 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 			if ( a_err )
 			{
 				a_sock.emit( "err", "Something gone and done goofed :/" )( a_err );
-				logger.warning( "Error when calling gAPI:" );
-				logger.warning( a_err );
+				logger.warn( "Error when calling gAPI:" );
+				logger.warn( a_err );
 				return;
 			}
 
@@ -147,8 +147,8 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 			if ( body == undefined || body.data == undefined || body.data.translations == undefined )
 			{
 				a_sock.emit( "err", "Unexpected response from Google Translate API" );
-				logger.warning( "Unexpected response from gAPI:" );
-				logger.warning( a_body );
+				logger.warn( "Unexpected response from gAPI:" );
+				logger.warn( a_body );
 				return;
 			}
 
