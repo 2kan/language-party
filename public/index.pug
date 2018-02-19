@@ -1,11 +1,38 @@
 html
+	head
+		link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css")
+		link(rel="stylesheet", href="styles.css")
+
 	body
-		form#inputForm
-			input(type="text")#input
-		#translationOutlet
+
+		.container#heading
+			.content
+				h1= "Language party!"
+
+		.container
+			form#inputForm
+				input.input.is-large#inputPhrase(type="text", placeholder="Start with an English phrase...")
+			.clearfix
+				.is-pulled-left
+					| Find equilibrium between&nbsp;
+					.control#sourceLanguageControl
+						.select
+							select#sourceLanguage
+					| &nbsp;and&nbsp;
+					.control#otherLanguageControl
+						.select
+							select#otherLanguage
+
+				.is-pulled-right
+					a.button.is-info#submit= "Find equilibrium!"
+
+		.container
+			#translationOutlet
 
 		script(src="/socket.io/socket.io.js")
 		script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")
 		script.
 			var socket = io();
+		
+		//script(src="/js/languages.json")
 		script(src="/js/translate.js")
