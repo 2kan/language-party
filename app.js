@@ -14,6 +14,8 @@ const gapi = require( "./google-api.json" );
 const langMap = require( "./languages.json" );
 
 const TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2";
+const TRANSLATE_DELAY = 500; // 0.5 second delay between each request to gAPI
+
 var clientData = [];
 
 
@@ -146,7 +148,8 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 			if ( a_langIndex % a_languages.length == 0 )
 				a_translations.push( a_textToTranslate );
 
-			translate( a_languages, a_langIndex + 1, body.data.translations[ 0 ].translatedText, a_translations, a_sock );
+			// Wait for a little bit then translate again
+			setTimeout( translate, TRANSLATE_DELAY, a_languages, a_langIndex + 1, body.data.translations[ 0 ].translatedText, a_translations, a_sock );
 		}
 	);
 }
