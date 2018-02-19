@@ -10,11 +10,14 @@ var bodyParser = require( "body-parser" );
 app.use( bodyParser.urlencoded( { extended: false } ) );
 app.use( bodyParser.json() );
 
+const logger = require( "./Logger.js" );
+
 const gapi = require( "./google-api.json" );
 const langMap = require( "./languages.json" );
 
 const TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2";
 const TRANSLATE_DELAY = 500; // 0.5 second delay between each request to gAPI
+const PORT = 80; // TODO: set this via config / env variables
 
 var clientData = [];
 
@@ -31,12 +34,12 @@ app.get( "/js/languages.json", function ( a_req, a_res, a_body )
 //app.post( "/party", function ( a_req, a_res )
 io.on( "connection", function ( a_sock )
 {
-	console.log( "User connected - ID " + a_sock.id );
+	logger.info( "User connected - ID " + a_sock.id );
 	clientData[ a_sock.id ] = { translationInProgress: false };
 
 	a_sock.on( "disconnect", function ()
 	{
-		console.log( "User disconnected - ID " + a_sock.id );
+		logger.info( "User disconnected - ID " + a_sock.id );
 		delete clientData[ a_sock.id ];
 	} );
 
@@ -49,7 +52,7 @@ io.on( "connection", function ( a_sock )
 			return;
 		}
 
-		console.log( a_params, a_sock.id );
+		//console.log( a_params, a_sock.id );
 		// Validate input
 		if ( a_params.text == undefined || a_params.languages == undefined )
 		{
@@ -77,16 +80,16 @@ io.on( "connection", function ( a_sock )
 			humanLangs.push( langMap[ languages[ i ] ] );
 		}
 
-		console.log( "[" + a_sock.id + "] Translating through: " + humanLangs.join( " -> " ) );
+		logger.verbose( "[" + a_sock.id + "] Translating through: " + humanLangs.join( " -> " ) );
 		clientData[ a_sock.id ].translationInProgress = true;
 
 		translate( languages, 0, a_params.text, [], a_sock );
 	} );
 } );
 
-http.listen( 3000, function ()
+http.listen( PORT, function ()
 {
-	console.log( "Listening on port 3000" );
+	logger.info( "Listening on port " + PORT );
 } );
 
 
@@ -105,12 +108,12 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 			translation: a_textToTranslate,
 			equilibrium: true
 		} );
-		console.log( "[" + a_sock.id + "] Equilibrium: " + a_textToTranslate );
-		console.log( "[" + a_sock.id + "] ~ done ~" );
+		logger.verbose( "[" + a_sock.id + "] Equilibrium: " + a_textToTranslate );
+		logger.verbose( "[" + a_sock.id + "] ~ done ~" );
 		return;
 	}
 
-	console.log( "[" + a_sock.id + "] Translating: " + a_textToTranslate );
+	logger.verbose( "[" + a_sock.id + "] Translating: " + a_textToTranslate );
 	// TODO: use better logging lol
 
 	request.post( {
