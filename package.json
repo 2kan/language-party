@@ -1,5 +1,5 @@
 {
-  "name": "thai-party",
+  "name": "language-party",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/2kan/thai-party.git"
+    "url": "git+https://github.com/2kan/language-party.git"
   },
   "author": "Tom Penney",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/2kan/thai-party/issues"
+    "url": "https://github.com/2kan/language-party/issues"
   },
-  "homepage": "https://github.com/2kan/thai-party#readme",
+  "homepage": "https://github.com/2kan/language-party#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
