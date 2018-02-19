@@ -45,7 +45,7 @@ io.on( "connection", function ( a_sock )
 
 	a_sock.on( "translate", function ( a_params )
 	{
-		logger.verbose("[" + a_sock.id + "] Incoming translation..");
+		logger.verbose( "[" + a_sock.id + "] Incoming translation.." );
 		// Check if the client is already translating something
 		if ( clientData[ a_sock.id ].translationInProgress )
 		{
@@ -135,6 +135,8 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 			if ( a_err )
 			{
 				a_sock.emit( "err", "Something gone and done goofed :/" )( a_err );
+				logger.warning( "Error when calling gAPI:" );
+				logger.warning( a_err );
 				return;
 			}
 
@@ -145,6 +147,8 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 			if ( body == undefined || body.data == undefined || body.data.translations == undefined )
 			{
 				a_sock.emit( "err", "Unexpected response from Google Translate API" );
+				logger.warning( "Unexpected response from gAPI:" );
+				logger.warning( a_body );
 				return;
 			}
 
