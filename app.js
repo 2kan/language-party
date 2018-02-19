@@ -45,6 +45,7 @@ io.on( "connection", function ( a_sock )
 
 	a_sock.on( "translate", function ( a_params )
 	{
+		logger.verbose("[" + a_sock.id + "] Incoming translation..");
 		// Check if the client is already translating something
 		if ( clientData[ a_sock.id ].translationInProgress )
 		{
@@ -110,6 +111,9 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 		} );
 		logger.verbose( "[" + a_sock.id + "] Equilibrium: " + a_textToTranslate );
 		logger.verbose( "[" + a_sock.id + "] ~ done ~" );
+		
+		clientData[ a_sock.id ].translationInProgress = false;
+
 		return;
 	}
 
