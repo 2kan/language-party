@@ -5,6 +5,7 @@ const equilibriumTemplate = "<div class='languageCard equilibriumFound'><div cla
 var langMap = [];
 var submissionLocked = false;
 var footerHeight = 0;
+var useExtraLanguage = true;
 
 // Fetch the language map and load the languages into select elements
 fetch( "/js/languages.json" )
@@ -28,6 +29,13 @@ $( document ).ready( function ()
 	} );
 
 	$( "#submit" ).on( "click", Submit );
+
+	$( "#addLanguage" ).on( "click", function ()
+	{
+		$( this ).css( "display", "none" );
+		$( "#extraLanguageControl" ).css( "display", "inherit" );
+		useExtraLanguage = true;
+	} );
 } );
 
 socket.on( "translation", function ( a_response )
@@ -73,10 +81,15 @@ function Submit()
 
 	var sourceLanguage = $( "#sourceLanguage" ).val();
 	var otherLanguage = $( "#otherLanguage" ).val();
+	var extraLanguage = $( "#extraLanguage" ).val();
+
+	var languages = otherLanguage + "," + sourceLanguage;
+	if ( useExtraLanguage )
+		languages = otherLanguage + "," + extraLanguage + "," + sourceLanguage
 
 	socket.emit( "translate", {
 		text: $( "#inputPhrase" ).val(),
-		languages: otherLanguage + "," + sourceLanguage
+		languages: languages
 	} );
 }
 
@@ -91,9 +104,10 @@ function LoadLanguages()
 			languageOptions += "<option value='" + key + "'>" + langMap[ key ] + "</option>";
 	}
 
-	$( "#sourceLanguage, #otherLanguage" ).append( languageOptions );
+	$( "#sourceLanguage, #otherLanguage, #extraLanguage" ).append( languageOptions );
 	$( "#sourceLanguage" ).val( DEFAULT_LANGUAGE );
 	$( "#otherLanguage" ).val( GetRandomLanguage() );
+	$( "#extraLanguage" ).val( GetRandomLanguage() );
 }
 
 function LockSubmission()

@@ -1,7 +1,7 @@
 html
 	head
 		title= "Language party!"
-		
+
 		link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css")
 		link(rel="stylesheet", href="styles.css")
 
@@ -24,6 +24,12 @@ html
 					.control#otherLanguageControl
 						.select
 							select#otherLanguage
+					| &nbsp;
+					a#addLanguage= "+ add one more language"
+					.control#extraLanguageControl
+						| and&nbsp;
+						.select
+							select#extraLanguage
 
 				.is-pulled-right
 					button.button.is-info#submit= "Find equilibrium!"
