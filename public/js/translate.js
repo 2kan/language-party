@@ -65,6 +65,7 @@ socket.on( "err", function ( a_err )
 {
 	console.log( a_err );
 	$( "#translationOutlet" ).append( "<strong>" + a_err + "</strong>" );
+	UnlockSubmission();
 } );
 
 
