@@ -13,11 +13,6 @@ body
 	margin-top: 20px;
 }
 
-#extraLanguageControl
-{
-	display: none;
-}
-
 /* Dumb hack because divs can lose height when they
  * have floating child nodes ヽ(。_°)ノ
  */
@@ -52,10 +47,15 @@ body
 	border-bottom: 0;
 }
 
-#sourceLanguageControl, #otherLanguageControl
+#sourceLanguageControl, #otherLanguageControl, #extraLanguageControl
 {
 	display: inline-block;
 	vertical-align: middle;
+}
+
+#extraLanguageControl
+{
+	display: none;
 }
 
 .footer

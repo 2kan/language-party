@@ -33,7 +33,7 @@ $( document ).ready( function ()
 	$( "#addLanguage" ).on( "click", function ()
 	{
 		$( this ).css( "display", "none" );
-		$( "#extraLanguageControl" ).css( "display", "inherit" );
+		$( "#extraLanguageControl" ).css( "display", "inline-block" );
 		useExtraLanguage = true;
 	} );
 } );
