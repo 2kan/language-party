@@ -14,6 +14,7 @@ const gapi = require( "./google-api.json" );
 const langMap = require( "./languages.json" );
 
 const TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2";
+var clientData = [];
 
 
 app.use( express.static( "./public" ) );
@@ -28,16 +29,25 @@ app.get( "/js/languages.json", function ( a_req, a_res, a_body )
 //app.post( "/party", function ( a_req, a_res )
 io.on( "connection", function ( a_sock )
 {
-	console.log( "User connected" );
+	console.log( "User connected - ID " + a_sock.id );
+	clientData[ a_sock.id ] = { translationInProgress: false };
+
 	a_sock.on( "disconnect", function ()
 	{
-		console.log( "user disconnected" );
-
+		console.log( "User disconnected - ID " + a_sock.id );
+		delete clientData[ a_sock.id ];
 	} );
 
 	a_sock.on( "translate", function ( a_params )
 	{
-		console.log( a_params )
+		// Check if the client is already translating something
+		if ( clientData[ a_sock.id ].translationInProgress )
+		{
+			// No need to respond with an error (famous last words)
+			return;
+		}
+
+		console.log( a_params, a_sock.id );
 		// Validate input
 		if ( a_params.text == undefined || a_params.languages == undefined )
 		{
@@ -65,7 +75,9 @@ io.on( "connection", function ( a_sock )
 			humanLangs.push( langMap[ languages[ i ] ] );
 		}
 
-		console.log( "Translating through: " + humanLangs.join( " -> " ) );
+		console.log( "[" + a_sock.id + "] Translating through: " + humanLangs.join( " -> " ) );
+		clientData[ a_sock.id ].translationInProgress = true;
+
 		translate( languages, 0, a_params.text, [], a_sock );
 	} );
 } );
@@ -78,6 +90,10 @@ http.listen( 3000, function ()
 
 function translate( a_languages, a_langIndex, a_textToTranslate, a_translations, a_sock )
 {
+	// Stop translating if the client has disconnected
+	if ( !clientData[ a_sock.id ] )
+		return;
+
 	// If we've seen this translation already, send the response.
 	// This prevents an infinite loop of conversions
 	if ( a_translations.includes( a_textToTranslate ) )
@@ -87,12 +103,13 @@ function translate( a_languages, a_langIndex, a_textToTranslate, a_translations,
 			translation: a_textToTranslate,
 			equilibrium: true
 		} );
-		console.log( "Equilibrium: " + a_textToTranslate );
-		console.log( "~ done ~" );
+		console.log( "[" + a_sock.id + "] Equilibrium: " + a_textToTranslate );
+		console.log( "[" + a_sock.id + "] ~ done ~" );
 		return;
 	}
 
-	console.log( "Translating: " + a_textToTranslate );
+	console.log( "[" + a_sock.id + "] Translating: " + a_textToTranslate );
+	// TODO: use better logging lol
 
 	request.post( {
 		url: TRANSLATE_URL,
