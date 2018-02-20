@@ -64,7 +64,8 @@ socket.on( "translation", function ( a_response )
 		UnlockSubmission();
 	}
 
-	window.scroll( { top: rect.y + rect.height + footerHeight, left: 0, behavior: "smooth" } );
+	//window.scroll( { top: rect.y + rect.height + footerHeight, left: 0, behavior: "smooth" } );
+	window.scroll( { top: $( "html" )[ 0 ].getBoundingClientRect().height, left: 0, behavior: "smooth" } );
 } );
 
 socket.on( "err", function ( a_err )
