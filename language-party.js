@@ -17,6 +17,7 @@ const langMap = require( "./languages.json" );
 
 const TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2";
 const TRANSLATE_DELAY = 500; // 0.5 second delay between each request to gAPI
+const MAX_PHRASE_LENGTH = 500; // max number of characters to convert
 const PORT = 80; // TODO: set this via config / env variables
 
 var clientData = [];
@@ -64,9 +65,14 @@ io.on( "connection", function ( a_sock )
 		var languages = a_params.languages.replace( /\s/g, "" ).split( "," );
 		if ( languages.length == 0 )
 		{
-			a_sock.emit( "err", "invalid languages input" );
+			a_sock.emit( "err", "Invalid language input" );
 			return;
 		}
+
+		// Trim extra characters from translation if someone tries to submit
+		// a message that's too long (and got past the client-side restriction)
+		if ( a_params.text.length > MAX_PHRASE_LENGTH )
+			a_params.text = a_params.text.slice( 0, MAX_PHRASE_LENGTH );
 
 		// Validate input languages
 		var humanLangs = [];
