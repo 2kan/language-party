@@ -6,6 +6,7 @@ html
 body
 {
 	padding-bottom: 150px;
+	position: relative;
 }
 
 #heading
@@ -61,8 +62,9 @@ body
 .footer
 {
 	background-color: #d4d4d4;
-	position: fixed;
+	position: absolute;
 	bottom: 0;
 	padding-bottom: 3rem;
 	width: 100%; /* why doesn't bulma do this? */
+	margin-top: 50px;
 }
