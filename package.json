@@ -5,7 +5,7 @@
   "main": "language-party.js",
   "scripts": {
 	"test": "echo \"Error: no test specified\" && exit 1",
-	"start": "pug public\\. && node --harmony_array_includes language-party"
+	"start": "pug public/. && node --harmony_array_includes language-party"
   },
   "repository": {
     "type": "git",
