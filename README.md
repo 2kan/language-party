@@ -21,4 +21,4 @@ And launch the app:
 node translation-party
 ```
 
-If you're running on a linux prod environment, you might need to setup a symlink from `nodejs` to `node` unless you've installed the legacy package of node, and you may also need to run node with the `--harmony_array_includes`.
+If you're running on a linux prod environment, you might need to setup a symlink from `nodejs` to `node` unless you've installed the legacy package of node, and you may also need to run node with the `--harmony_array_includes` flag.
