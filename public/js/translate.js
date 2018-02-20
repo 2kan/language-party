@@ -94,6 +94,10 @@ function Submit()
 	if ( useExtraLanguage )
 		languages = otherLanguage + "," + extraLanguage + "," + sourceLanguage
 
+	var phrase = $( "#inputPhrase" ).val();
+	if ( phrase.length > 500 )
+		phrase = phrase.slice( 0, 500 );
+
 	socket.emit( "translate", {
 		text: $( "#inputPhrase" ).val(),
 		languages: languages
